@@ -30,11 +30,14 @@ public class ClientDataHandler extends SimpleChannelInboundHandler<Messages> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        logger.log(
+        /*logger.log(
                 Level.WARNING,
-                "Unexpected exception from downstream.", cause);
+                "Unexpected exception from downstream.", cause);*/
+        System.out.println("Channel closing.");
         ctx.close();
     }
+    
+    
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Messages msg) throws Exception {
