@@ -14,6 +14,8 @@ public class DBConstants {
  
         public final static String DB_ADDRESS = "54.83.26.34";
         public final static String DB_NAME = "PubSub";
-        public final static String DB_COLLECTION = "topic";
+        public final static String PUBLISHER_COLLECTION = "Publisher";
+        public final static String PUBLISHER_EMAIL = "email";
+        public final static String PUBLISHER_PWD = "password";
 
 }

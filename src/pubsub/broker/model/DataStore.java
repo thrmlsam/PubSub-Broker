@@ -15,7 +15,7 @@ public final class DataStore {
 
     public static IDataStore getDataObject(Messages msg) {
 
-        IDataStore dataStore;
+        IDataStore dataStore = null;
         if(msg.getMessageType() == Messages.MessageType.ADD_PUBLISHER){
             
         }
@@ -25,8 +25,12 @@ public final class DataStore {
         else if(msg.getMessageType() == Messages.MessageType.NEW_POST){
             
         }
+        else if(msg.getMessageType() == Messages.MessageType.LOGIN){
+            dataStore = new Login(msg);
+        }
 
-        return null;
+
+        return dataStore;
     }
 
 }
