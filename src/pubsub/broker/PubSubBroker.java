@@ -6,6 +6,7 @@
 
 package pubsub.broker;
 
+import java.net.InetAddress;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,7 +29,7 @@ public class PubSubBroker {
             } else {
                 port = 8080;
             }
-            System.out.println( "Starting Server at port " + port );
+            System.out.println( "Starting Server at port " + InetAddress.getLocalHost().getHostAddress() + ":" + port );
             new Server(port).run();
         } catch (Exception ex) {
             Logger.getLogger(PubSubBroker.class.getName()).log(Level.SEVERE, null, ex);

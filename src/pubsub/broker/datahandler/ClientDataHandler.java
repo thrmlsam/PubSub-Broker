@@ -9,13 +9,15 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import pubsub.message.NetworkMessage.Messages;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import pubsub.broker.database.IDataStore;
 import pubsub.broker.model.DataStore;
 import pubsub.broker.model.Login;
 import pubsub.broker.model.Publisher;
+import pubsub.broker.model.Topics;
+import pubsub.message.NetworkMessage.Messages;
 
 public class ClientDataHandler extends SimpleChannelInboundHandler<Messages> {
 
@@ -102,7 +104,17 @@ public class ClientDataHandler extends SimpleChannelInboundHandler<Messages> {
                 pub.save();
                 pub.addTopic(msg.getTitle());
             }
-           
+            else if(msg.getMessageType() == Messages.MessageType.GET_TOPICS){
+                Topics topics = new Topics();
+                ArrayList<String> allTopics = topics.getAllTopics();
+                Messages.Builder reply = Messages.newBuilder();
+                reply.setMessageType(Messages.MessageType.GET_TOPICS);
+                for(int i=0;i<allTopics.size();i++){
+                    reply.addTopics(allTopics.get(i));
+                }
+                ctx.channel().writeAndFlush(reply.build());
+                
+            }
             
         } catch (Exception ex) {
             logger.log(

@@ -24,5 +24,7 @@ public class DBConstants {
         public final static String TOPIC_TOPIC = "topic";
         public final static String TOPIC_EMAIL_LIST = "email_list";
         public final static String TOPIC_HOST_LIST = "host_list";
+        
+        
 
 }
