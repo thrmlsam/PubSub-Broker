@@ -84,7 +84,7 @@ public class ClientDataHandler extends SimpleChannelInboundHandler<Messages> {
                     reply.setMessage("AlreadyRegistered");
                 }
                 else{
-                    pub.populateDBObject();
+                    pub.populateDBObject(msg);
                     pub.save();
                     reply.setMessage("Success");
                     Messages.Publisher.Builder publisher = Messages.Publisher.newBuilder();
@@ -95,6 +95,12 @@ public class ClientDataHandler extends SimpleChannelInboundHandler<Messages> {
                     reply.setPublisher(publisher);
                 }
                 ctx.channel().writeAndFlush(reply.build());
+            }
+            else if(msg.getMessageType() == Messages.MessageType.ADD_TOPIC){
+                Publisher pub = new Publisher(msg);
+                pub.populateDBObject(msg);
+                pub.save();
+                pub.addTopic(msg.getTitle());
             }
            
             

@@ -6,8 +6,10 @@
 
 package pubsub.broker.model;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.WriteConcern;
+import java.util.ArrayList;
 import java.util.List;
 import pubsub.broker.database.DBConstants;
 import pubsub.broker.database.DataAccess;
@@ -80,14 +82,20 @@ public class Publisher extends DataAccess implements IDataStore{
     public void save() {
         
         DBCollection packageColl = db.getCollection(DBConstants.PUBLISHER_COLLECTION);
-        
-        packageColl.insert(this, WriteConcern.ACKNOWLEDGED);
+        BasicDBObject query = new BasicDBObject();
+        query.put(DBConstants.PUBLISHER_EMAIL, this.email);
+        packageColl.update(query,this,true,false, WriteConcern.FSYNCED);
     }
  
     public Publisher(Messages msg){
         this.email = msg.getPublisher().getEmail();
         this.name = msg.getPublisher().getName();
         this.password = msg.getPublisher().getPassword();
+        
+        if(msg.getMessageType() == Messages.MessageType.ADD_TOPIC){
+            this.topics = new ArrayList<String>();
+            topics.addAll(msg.getTopicsList()) ;
+        }
         
         
     }
@@ -105,10 +113,25 @@ public class Publisher extends DataAccess implements IDataStore{
             
     }
 
-    public void populateDBObject() {
+    public void populateDBObject(Messages msg) {
         
         this.put(DBConstants.PUBLISHER_EMAIL, this.email);
         this.put(DBConstants.PUBLISHER_NAME,this.name);
         this.put(DBConstants.PUBLISHER_PWD, this.password);
+        if(msg.getMessageType() == Messages.MessageType.ADD_TOPIC){
+            this.put(DBConstants.PUBLISHER_TOPICS, this.topics);
+        }
+    }
+
+    public void addTopic(String title) {
+        
+        DBCollection coll = db.getCollection(DBConstants.TOPIC_COLLECTION);
+        
+        BasicDBObject query = new BasicDBObject();
+        query.put(DBConstants.TOPIC_TOPIC, title);
+        query.put(DBConstants.TOPIC_EMAIL_LIST, new ArrayList<String>());
+        query.put(DBConstants.TOPIC_HOST_LIST, new ArrayList<String>());
+        
+        coll.insert(query, WriteConcern.FSYNCED);
     }
 }

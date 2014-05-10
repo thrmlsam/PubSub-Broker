@@ -18,5 +18,11 @@ public class DBConstants {
         public final static String PUBLISHER_EMAIL = "email";
         public final static String PUBLISHER_PWD = "password";
         public final static String PUBLISHER_NAME = "name";
+        public final static String PUBLISHER_TOPICS = "topics";
+        
+        public final static String TOPIC_COLLECTION = "Topics";
+        public final static String TOPIC_TOPIC = "topic";
+        public final static String TOPIC_EMAIL_LIST = "email_list";
+        public final static String TOPIC_HOST_LIST = "host_list";
 
 }
