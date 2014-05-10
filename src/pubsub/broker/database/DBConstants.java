@@ -17,5 +17,6 @@ public class DBConstants {
         public final static String PUBLISHER_COLLECTION = "Publisher";
         public final static String PUBLISHER_EMAIL = "email";
         public final static String PUBLISHER_PWD = "password";
+        public final static String PUBLISHER_NAME = "name";
 
 }

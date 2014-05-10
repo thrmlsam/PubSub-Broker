@@ -21,11 +21,11 @@ public class ClientDataHandler extends SimpleChannelInboundHandler<Messages> {
 
     private static final Logger logger = Logger.getLogger(
             ClientDataHandler.class.getName());
-    private volatile Channel channel;
+   
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        channel = ctx.channel();
+        
         System.out.println("Connected to :" + ctx.channel().remoteAddress());
     }
 
@@ -71,6 +71,29 @@ public class ClientDataHandler extends SimpleChannelInboundHandler<Messages> {
                     reply.setMessage("Failure");
                 }
                 reply.setMessageType(Messages.MessageType.LOGIN);
+                ctx.channel().writeAndFlush(reply.build());
+            }
+            else if(msg.getMessageType()==Messages.MessageType.ADD_PUBLISHER)
+            {
+                Publisher pub = new Publisher(msg);
+                Messages.Builder reply = Messages.newBuilder();
+                    reply.setMessageType(Messages.MessageType.ADD_PUBLISHER);
+                
+                if(pub.alreadyRegistered(msg)){
+                    
+                    reply.setMessage("AlreadyRegistered");
+                }
+                else{
+                    pub.populateDBObject();
+                    pub.save();
+                    reply.setMessage("Success");
+                    Messages.Publisher.Builder publisher = Messages.Publisher.newBuilder();
+                     publisher.setEmail(pub.getEmail());
+                     publisher.setName(pub.getName());
+                     publisher.setPassword(pub.getPassword());
+                     
+                    reply.setPublisher(publisher);
+                }
                 ctx.channel().writeAndFlush(reply.build());
             }
            

@@ -6,9 +6,13 @@
 
 package pubsub.broker.model;
 
+import com.mongodb.DBCollection;
+import com.mongodb.WriteConcern;
 import java.util.List;
+import pubsub.broker.database.DBConstants;
 import pubsub.broker.database.DataAccess;
 import pubsub.broker.database.IDataStore;
+import pubsub.message.NetworkMessage.Messages;
 
 /**
  *
@@ -74,6 +78,37 @@ public class Publisher extends DataAccess implements IDataStore{
 
     @Override
     public void save() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        DBCollection packageColl = db.getCollection(DBConstants.PUBLISHER_COLLECTION);
+        
+        packageColl.insert(this, WriteConcern.ACKNOWLEDGED);
+    }
+ 
+    public Publisher(Messages msg){
+        this.email = msg.getPublisher().getEmail();
+        this.name = msg.getPublisher().getName();
+        this.password = msg.getPublisher().getPassword();
+        
+        
+    }
+
+    public boolean alreadyRegistered(Messages msg) {
+        
+    
+        
+        this.put(DBConstants.PUBLISHER_EMAIL, this.email);
+        DBCollection coll = db.getCollection(DBConstants.PUBLISHER_COLLECTION);
+        if(coll.findOne(this) != null)
+            return true;
+        else
+        return false;
+            
+    }
+
+    public void populateDBObject() {
+        
+        this.put(DBConstants.PUBLISHER_EMAIL, this.email);
+        this.put(DBConstants.PUBLISHER_NAME,this.name);
+        this.put(DBConstants.PUBLISHER_PWD, this.password);
     }
 }
