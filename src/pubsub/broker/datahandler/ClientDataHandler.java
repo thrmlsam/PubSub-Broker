@@ -179,10 +179,19 @@ public class ClientDataHandler extends SimpleChannelInboundHandler<Messages> {
                 
                 Topics topics = new Topics();
                 ArrayList<String> emailList = new ArrayList<String>();
+                if(topics.getEmailSubscribers(title)!=null)
                         emailList.addAll(topics.getEmailSubscribers(title));
                 
-                if(emailList !=null){
+                if(emailList.size()>0){
                     sendEmail(emailList,title,post);
+                }
+                
+                ArrayList<String> hostList = new ArrayList<String>();
+                if(topics.getHostSubscribers(title) != null)
+                        hostList.addAll(topics.getHostSubscribers(title));
+                
+                if(hostList.size() >0){
+                    sendtoHost(hostList,title,post);
                 }
             }
         } catch (Exception ex) {
@@ -250,6 +259,10 @@ public class ClientDataHandler extends SimpleChannelInboundHandler<Messages> {
       } catch (MessagingException e) {
          throw new RuntimeException(e);
       }
+    }
+
+    private void sendtoHost(ArrayList<String> hostList, String title, String post) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

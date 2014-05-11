@@ -12,6 +12,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import net.karmafiles.ff.core.tool.dbutil.converter.Converter;
 import pubsub.broker.database.DBConstants;
@@ -298,11 +299,15 @@ public class Topics extends DataAccess implements IDataStore{
         DBObject topicObject = collection.findOne(query);
         if (topicObject !=null){
             ArrayList<String> hostList = new ArrayList<String>();
-            hostList.addAll((List<String>)topicObject.get(DBConstants.TOPIC_EMAIL_LIST));
+            hostList.addAll((List<String>)topicObject.get(DBConstants.TOPIC_HOST_LIST));
             return hostList;
         }
         else        
             return null;
+    }
+
+    public Collection<? extends String> getHostSubscribers(String title) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
 
