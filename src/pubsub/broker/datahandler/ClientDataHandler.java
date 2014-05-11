@@ -112,10 +112,57 @@ public class ClientDataHandler extends SimpleChannelInboundHandler<Messages> {
                 for(int i=0;i<allTopics.size();i++){
                     reply.addTopics(allTopics.get(i));
                 }
-                ctx.channel().writeAndFlush(reply.build());
-                
+                ctx.channel().writeAndFlush(reply.build());  
             }
-            
+            else if(msg.getMessageType() == Messages.MessageType.GET_SUBSCRIBEDTOPICS){
+                System.out.println("Broker:  GET_SUBSCRIBEDTOPICS");
+                Topics topics = new Topics();
+                ArrayList<String> subscribedTopics = null;
+                if(msg.getSubscriber().hasEmail()){
+                    System.out.println("sub has email");
+                    subscribedTopics = topics.getSubscribedTopicsEmail(msg.getSubscriber().getEmail());
+                }
+                else if(msg.getSubscriber().hasHostAddress()){
+                    System.out.println("sub has hostaddr");
+                    subscribedTopics = topics.getSubscribedTopicsIP(msg.getSubscriber().getHostAddress());
+                }
+                //ctx.channel().remoteAddress().toString()
+                
+                Messages.Builder reply = Messages.newBuilder();
+                reply.setMessageType(Messages.MessageType.GET_SUBSCRIBEDTOPICS);
+                for(int i=0;i<subscribedTopics.size();i++){
+                    reply.addTopics(subscribedTopics.get(i));
+                }
+                ctx.channel().writeAndFlush(reply.build());  
+            }
+            else if(msg.getMessageType() == Messages.MessageType.ADD_SUBSCRIBER){
+                System.out.println("Broker:  ADD_SUBSCRIBER");
+                Topics topics = new Topics();
+                
+                if(msg.getSubscriber().hasEmail()){
+                    System.out.println("sub has email");
+                    System.out.println(msg.getTopics(0) + "-" + msg.getSubscriber().getEmail());
+                    topics.addSubscriberByEmail(msg.getTopics(0), msg.getSubscriber().getEmail());
+                }
+                else if(msg.getSubscriber().hasHostAddress()){
+                    System.out.println("sub has hostaddr");
+                    topics.addSubscriberByHostAddress(msg.getTopics(0), msg.getSubscriber().getHostAddress());
+                }
+            }
+            else if(msg.getMessageType() == Messages.MessageType.REMOVE_SUBSCRIBER){
+                System.out.println("Broker:  REMOVE_SUBSCRIBER");
+                Topics topics = new Topics();
+                
+                if(msg.getSubscriber().hasEmail()){
+                    System.out.println("sub has email");
+                    System.out.println(msg.getTopics(0) + "-" + msg.getSubscriber().getEmail());
+                    topics.removeSubscriberEmail(msg.getTopics(0), msg.getSubscriber().getEmail());
+                }
+                else if(msg.getSubscriber().hasHostAddress()){
+                    System.out.println("sub has hostaddr");
+                    topics.removeSubscriberHostAddress(msg.getTopics(0), msg.getSubscriber().getHostAddress());
+                }
+            }
         } catch (Exception ex) {
             logger.log(
                     Level.SEVERE,
