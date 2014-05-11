@@ -9,9 +9,19 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import java.net.PasswordAuthentication;
 import java.util.ArrayList;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import pubsub.broker.database.DBConstants;
 import pubsub.broker.database.IDataStore;
 import pubsub.broker.model.DataStore;
 import pubsub.broker.model.Login;
@@ -163,12 +173,83 @@ public class ClientDataHandler extends SimpleChannelInboundHandler<Messages> {
                     topics.removeSubscriberHostAddress(msg.getTopics(0), msg.getSubscriber().getHostAddress());
                 }
             }
+            else if(msg.getMessageType() == Messages.MessageType.NEW_POST){
+                String title = msg.getTitle();
+                String post = msg.getMessage();
+                
+                Topics topics = new Topics();
+                ArrayList<String> emailList = new ArrayList<String>();
+                        emailList.addAll(topics.getEmailSubscribers(title));
+                
+                if(emailList !=null){
+                    sendEmail(emailList,title,post);
+                }
+            }
         } catch (Exception ex) {
             logger.log(
                     Level.SEVERE,
                     "Unexpected exception from downstream.", ex);
         }
 
+    }
+
+    private void sendEmail(ArrayList<String> to,String title, String post) {
+        
+        
+
+      // Sender's email ID needs to be mentioned
+      String from = DBConstants.USER;
+      final String username = DBConstants.USER;
+      final String password = DBConstants.USREINFO;//change accordingly
+
+      // Assuming you are sending email through relay.jangosmtp.net
+      String host = "smtp.gmail.com";
+
+      Properties props = new Properties();
+      props.put("mail.smtp.auth", "true");
+      props.put("mail.smtp.starttls.enable", "true");
+      props.put("mail.smtp.host", host);
+      props.put("mail.smtp.port", "25");
+
+      // Get the Session object.
+      Session session = Session.getInstance(props,
+         new javax.mail.Authenticator() {
+            protected javax.mail.PasswordAuthentication getPasswordAuthentication() {
+               return new javax.mail.PasswordAuthentication(username, password);
+	   }
+         });
+
+      try {
+	   // Create a default MimeMessage object.
+	   Message message = new MimeMessage(session);
+	
+	   // Set From: header field of the header.
+	   message.setFrom(new InternetAddress(from));
+	
+	   // Set To: header field of the header.
+           InternetAddress[] addressTo = new InternetAddress[to.size()];
+            for (int i = 0; i < to.size(); i++)
+            {
+                addressTo[i] = new InternetAddress(to.get(i));
+            }
+	   message.setRecipients(Message.RecipientType.TO,
+               addressTo);
+	
+	   // Set Subject: header field
+	   message.setSubject("New post in topic "+title);
+	
+	   // Now set the actual message
+	   message.setText(post);
+
+	   // Send message
+	   Transport.send(message);
+
+	   System.out.println("Sent message successfully....");
+        
+            
+      } catch (MessagingException e) {
+         throw new RuntimeException(e);
+      }
     }
 
 }

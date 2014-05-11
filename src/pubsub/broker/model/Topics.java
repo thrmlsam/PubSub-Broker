@@ -289,5 +289,20 @@ public class Topics extends DataAccess implements IDataStore{
 
         collection.update(query, updateObj);
     }
+
+    public ArrayList<String> getEmailSubscribers(String title) {
+        
+        DBCollection collection = db.getCollection(DBConstants.TOPIC_COLLECTION);
+        BasicDBObject query = new BasicDBObject();
+        query.put(DBConstants.TOPIC_TOPIC, title);
+        DBObject topicObject = collection.findOne(query);
+        if (topicObject !=null){
+            ArrayList<String> hostList = new ArrayList<String>();
+            hostList.addAll((List<String>)topicObject.get(DBConstants.TOPIC_EMAIL_LIST));
+            return hostList;
+        }
+        else        
+            return null;
+    }
 }
 
