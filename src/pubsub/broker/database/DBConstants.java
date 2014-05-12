@@ -27,5 +27,7 @@ public class DBConstants {
         public final static String USER = "thrmlsam@gmail.com";
         public final static String USREINFO = "dearabi143";
         
+        public final static int SUB_PORT = 8085;
+        
 
 }

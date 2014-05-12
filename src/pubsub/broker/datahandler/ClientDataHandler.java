@@ -27,6 +27,7 @@ import pubsub.broker.model.DataStore;
 import pubsub.broker.model.Login;
 import pubsub.broker.model.Publisher;
 import pubsub.broker.model.Topics;
+import pubsub.broker.subscriber.Client;
 import pubsub.message.NetworkMessage.Messages;
 
 public class ClientDataHandler extends SimpleChannelInboundHandler<Messages> {
@@ -178,13 +179,6 @@ public class ClientDataHandler extends SimpleChannelInboundHandler<Messages> {
                 String post = msg.getMessage();
                 
                 Topics topics = new Topics();
-                ArrayList<String> emailList = new ArrayList<String>();
-                if(topics.getEmailSubscribers(title)!=null)
-                        emailList.addAll(topics.getEmailSubscribers(title));
-                
-                if(emailList.size()>0){
-                    sendEmail(emailList,title,post);
-                }
                 
                 ArrayList<String> hostList = new ArrayList<String>();
                 if(topics.getHostSubscribers(title) != null)
@@ -193,6 +187,16 @@ public class ClientDataHandler extends SimpleChannelInboundHandler<Messages> {
                 if(hostList.size() >0){
                     sendtoHost(hostList,title,post);
                 }
+                
+                ArrayList<String> emailList = new ArrayList<String>();
+                if(topics.getEmailSubscribers(title)!=null)
+                        emailList.addAll(topics.getEmailSubscribers(title));
+                
+                if(emailList.size()>0){
+                    sendEmail(emailList,title,post);
+                }
+                
+                
             }
         } catch (Exception ex) {
             logger.log(
@@ -262,7 +266,24 @@ public class ClientDataHandler extends SimpleChannelInboundHandler<Messages> {
     }
 
     private void sendtoHost(ArrayList<String> hostList, String title, String post) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        Messages.Builder msg = Messages.newBuilder();
+        
+        msg.setMessageType(Messages.MessageType.NEW_POST);
+        msg.setTitle(title);
+        msg.setMessage(post);
+        
+        for(int i =0;i<hostList.size();i++){
+            try {
+                Client sub = new Client(hostList.get(i), DBConstants.SUB_PORT);
+                sub.connect();
+                sub.send(msg.build());
+                System.out.println("msg to host send");
+            } catch (Exception ex) {
+                Logger.getLogger(ClientDataHandler.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+        }
     }
 
 }
