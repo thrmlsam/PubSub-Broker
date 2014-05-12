@@ -10,9 +10,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.WriteResult;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import net.karmafiles.ff.core.tool.dbutil.converter.Converter;
 import pubsub.broker.database.DBConstants;
@@ -91,20 +89,16 @@ public class Topics extends DataAccess implements IDataStore{
             ArrayList<String> topicList = new ArrayList<>();
             DBObject dbo = cursor.next();
             if(dbo!=null){
-                //System.out.print("dbo");
-               // System.out.println(dbo.get(DBConstants.TOPIC_EMAIL_LIST));
                 Topics topics = Converter.toObject(Topics.class, dbo);
-                //System.out.println(topics);
+                
                 ArrayList<String> emailList = new ArrayList<>();
-                /*if(topics.getEmail_list()!=null)
-                emailList.addAll(topics.getEmail_list());*/
+                
                 emailList.addAll((List<String>)dbo.get(DBConstants.TOPIC_EMAIL_LIST));
-                //topicList.add((String)dbo.get(DBConstants.TOPIC_TOPIC));
-               // System.out.println("-"+emailList);
+               
                 for(int i=0;i<emailList.size();i++){
-                 //   System.out.println(emailList.get(i));
+                 
                     if(emailList.get(i).trim().equalsIgnoreCase(email.trim())){
-                   //    System.out.println("loop" + i);
+                   
                        subscribedTopics.add(topics.getTopic());
                        break;
                     }
@@ -115,18 +109,6 @@ public class Topics extends DataAccess implements IDataStore{
                 }
             }
         }
-        /*DBCollection collection = db.getCollection(DBConstants.TOPIC_COLLECTION);
-        ArrayList<String> subscribedTopics = new ArrayList<String>();
-        DBCursor cursor = collection.find();
-	while (cursor.hasNext()) {
-            System.out.println("email");
-            DBObject dbo = cursor.next();
-            if(dbo!=null){
-                Topics topics = Converter.toObject(Topics.class, dbo);
-                subscribedTopics.add(topics.getTopic());
-            }
-        }*/
-        //System.out.println("SubscribedTopicsEmail: " + collection.count() + " - " + subscribedTopics.size());
         return subscribedTopics;
     }
 
@@ -135,25 +117,16 @@ public class Topics extends DataAccess implements IDataStore{
         ArrayList<String> subscribedTopics = new ArrayList<String>();
         DBCursor cursor = collection.find();
 	while (cursor.hasNext()) {
-            //System.out.println("cursor");
             
             ArrayList<String> topicList = new ArrayList<>();
             DBObject dbo = cursor.next();
             if(dbo!=null){
-                //System.out.print("dbo");
-                //System.out.println(dbo.get(DBConstants.TOPIC_HOST_LIST));
                 Topics topics = Converter.toObject(Topics.class, dbo);
-                //System.out.println(topics);
                 ArrayList<String> hostList = new ArrayList<>();
-                /*if(topics.getEmail_list()!=null)
-                emailList.addAll(topics.getEmail_list());*/
                 hostList.addAll((List<String>)dbo.get(DBConstants.TOPIC_HOST_LIST));
-                //topicList.add((String)dbo.get(DBConstants.TOPIC_TOPIC));
-                //System.out.println("-"+hostList);
                 for(int i=0;i<hostList.size();i++){
-                  //  System.out.println(hostList.get(i));
                     if(hostList.get(i).trim().equalsIgnoreCase(hostAddress.trim())){
-                        //System.out.println("loop" + i);
+                        
                         if(!subscribedTopics.contains(topics.getTopic())){
                             subscribedTopics.add(topics.getTopic());
                         }
@@ -167,24 +140,8 @@ public class Topics extends DataAccess implements IDataStore{
             }
         }
         
-       // System.out.println("SubscribedTopicsEmail: " + collection.count() + " - " + subscribedTopics.size());
         return subscribedTopics;
-        /*DBCollection collection = db.getCollection(DBConstants.TOPIC_COLLECTION);
-        ArrayList<String> subscribedTopics = new ArrayList<String>();
-        DBCursor cursor = collection.find();
-	while (cursor.hasNext()) {
-            DBObject dbo = cursor.next();
-            if(dbo!=null){
-                Topics topics = Converter.toObject(Topics.class, dbo);
-                //ArrayList<String> ipList = topics.getEmail_list();
-
-               // if(ipList.contains(hostAddress)){
-                 //   subscribedTopics.add(topics.getTopic());
-                //}
-            }
-        }
-        System.out.println("SubscribedTopicsEmail: " + collection.count() + " - " + subscribedTopics.size());
-        return subscribedTopics;*/
+        
     }
     
     @Override
@@ -218,7 +175,6 @@ public class Topics extends DataAccess implements IDataStore{
 
     public void addSubscriberByEmail(String topics, String email) {
         DBCollection collection = db.getCollection(DBConstants.TOPIC_COLLECTION);
-        //BasicDBObject query = new BasicDBObject(DBConstants.TOPIC_TOPIC, topics);
         
         BasicDBObject query = new BasicDBObject();
         query.put(DBConstants.TOPIC_TOPIC, topics);
@@ -229,10 +185,6 @@ public class Topics extends DataAccess implements IDataStore{
         emailList.addAll((List<String>)dbo.get(DBConstants.TOPIC_EMAIL_LIST));
         emailList.add(email);
         
-        /*List<String> hostList = new ArrayList<String>();
-        hostList.addAll((List<String>)dbo.get(DBConstants.TOPIC_HOST_LIST));*/
-        
-        
 
         BasicDBObject newDocument = new BasicDBObject();
         newDocument.put(DBConstants.TOPIC_EMAIL_LIST, emailList);
@@ -242,10 +194,6 @@ public class Topics extends DataAccess implements IDataStore{
 
         collection.update(query, updateObj);
         
-        /*BasicDBObject updateObj = new BasicDBObject(DBConstants.TOPIC_EMAIL_LIST, emailList);
-        updateObj.(DBConstants.TOPIC_EMAIL_LIST, emailList);
-        
-        WriteResult wr = collection.update(query, updateObj);*/
         
     }
 

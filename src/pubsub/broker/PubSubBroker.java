@@ -29,7 +29,7 @@ public class PubSubBroker {
             } else {
                 port = 8080;
             }
-            System.out.println( "Starting Server at port " + InetAddress.getLocalHost().getHostAddress() + ":" + port );
+            System.out.println( "Starting PubSub Server at " + InetAddress.getLocalHost().getHostAddress() + ":" + port );
             new Server(port).run();
         } catch (Exception ex) {
             Logger.getLogger(PubSubBroker.class.getName()).log(Level.SEVERE, null, ex);

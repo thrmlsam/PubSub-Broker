@@ -101,9 +101,7 @@ public class Publisher extends DataAccess implements IDataStore{
     }
 
     public boolean alreadyRegistered(Messages msg) {
-        
     
-        
         this.put(DBConstants.PUBLISHER_EMAIL, this.email);
         DBCollection coll = db.getCollection(DBConstants.PUBLISHER_COLLECTION);
         if(coll.findOne(this) != null)

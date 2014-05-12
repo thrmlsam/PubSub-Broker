@@ -30,21 +30,6 @@ public class Server {
         //worker group is to process data from each connection
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         
-        try{
-            /*
-            ServerBootstrap bootStrap = new ServerBootstrap();
-            bootStrap.group(bossGroup, workerGroup)
-                     .channel(NioServerSocketChannel.class)
-                     .childHandler(new ServerInitializer())
-                     .option(ChannelOption.SO_BACKLOG,128)
-                     .childOption(ChannelOption.SO_KEEPALIVE,true);
-             bootStrap.bind(port).sync().channel().closeFuture().sync();*/
-             // Bind and start to accept incoming connections.
-           // ChannelFuture f = bootStrap.bind(port).sync(); // (7)
-            // Wait until the server socket is closed.
-            // In this example, this does not happen, but you can do that to gracefully
-            // shut down your server.
-            //ChannelFuture sync = f.channel().closeFuture().sync();
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
@@ -56,12 +41,5 @@ public class Server {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
-                     
-        }finally{
-            bossGroup.shutdownGracefully();
-            workerGroup.shutdownGracefully();
-        }
-        
-        
     }
 }

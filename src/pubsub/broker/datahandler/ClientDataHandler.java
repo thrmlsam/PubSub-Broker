@@ -5,16 +5,12 @@
  */
 package pubsub.broker.datahandler;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import java.net.PasswordAuthentication;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -22,8 +18,6 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import pubsub.broker.database.DBConstants;
-import pubsub.broker.database.IDataStore;
-import pubsub.broker.model.DataStore;
 import pubsub.broker.model.Login;
 import pubsub.broker.model.Publisher;
 import pubsub.broker.model.Topics;
@@ -64,36 +58,38 @@ public class ClientDataHandler extends SimpleChannelInboundHandler<Messages> {
         try {
 
             if(msg.getMessageType() == Messages.MessageType.LOGIN){
-            
+                System.out.println("Login request from Publisher");
                 Login login = new Login(msg);
                 Publisher publisher = login.getPublisher();
                 Messages.Builder reply = Messages.newBuilder();
                 if(publisher != null){
                      
-                     reply.setMessage("Success");
-                     Messages.Publisher.Builder pub = Messages.Publisher.newBuilder();
-                     pub.setEmail(publisher.getEmail());
-                     pub.setName(publisher.getName());
-                     for(int i=0;i<publisher.getTopics().size();i++){
-                         reply.addTopics(publisher.getTopics().get(i));
+                    reply.setMessage("Success");
+                    Messages.Publisher.Builder pub = Messages.Publisher.newBuilder();
+                    pub.setEmail(publisher.getEmail());
+                    pub.setName(publisher.getName());
+                    for(int i=0;i<publisher.getTopics().size();i++){
+                        reply.addTopics(publisher.getTopics().get(i));
+                    }
+                    reply.setPublisher(pub);
+                    System.out.println("Login successful");
                 }
-                     reply.setPublisher(pub);
-                     
-                        }
                 else{
                     reply.setMessage("Failure");
+                    System.out.println("Login failed");
                 }
                 reply.setMessageType(Messages.MessageType.LOGIN);
                 ctx.channel().writeAndFlush(reply.build());
             }
             else if(msg.getMessageType()==Messages.MessageType.ADD_PUBLISHER)
             {
+                System.out.println("ADD_PUBLISHER request from Publisher");
                 Publisher pub = new Publisher(msg);
                 Messages.Builder reply = Messages.newBuilder();
                     reply.setMessageType(Messages.MessageType.ADD_PUBLISHER);
                 
                 if(pub.alreadyRegistered(msg)){
-                    
+                    System.out.println("Publisher already registered");
                     reply.setMessage("AlreadyRegistered");
                 }
                 else{
@@ -101,21 +97,25 @@ public class ClientDataHandler extends SimpleChannelInboundHandler<Messages> {
                     pub.save();
                     reply.setMessage("Success");
                     Messages.Publisher.Builder publisher = Messages.Publisher.newBuilder();
-                     publisher.setEmail(pub.getEmail());
-                     publisher.setName(pub.getName());
-                     publisher.setPassword(pub.getPassword());
-                     
+                    publisher.setEmail(pub.getEmail());
+                    publisher.setName(pub.getName());
+                    publisher.setPassword(pub.getPassword());
+                    
+                    System.out.println("Publisher added");
                     reply.setPublisher(publisher);
                 }
                 ctx.channel().writeAndFlush(reply.build());
             }
             else if(msg.getMessageType() == Messages.MessageType.ADD_TOPIC){
+                System.out.println("ADD_TOPIC from publisher");
                 Publisher pub = new Publisher(msg);
                 pub.populateDBObject(msg);
                 pub.save();
                 pub.addTopic(msg.getTitle());
+                
             }
             else if(msg.getMessageType() == Messages.MessageType.GET_TOPICS){
+                System.out.println("GET_ALL_TOPICS request from Subscriber");
                 Topics topics = new Topics();
                 ArrayList<String> allTopics = topics.getAllTopics();
                 Messages.Builder reply = Messages.newBuilder();
@@ -126,7 +126,7 @@ public class ClientDataHandler extends SimpleChannelInboundHandler<Messages> {
                 ctx.channel().writeAndFlush(reply.build());  
             }
             else if(msg.getMessageType() == Messages.MessageType.GET_SUBSCRIBEDTOPICS){
-               
+                System.out.println("GET_SUBSCRIBED_TOPICS request from Subscriber");
                 Topics topics = new Topics();
                 ArrayList<String> subscribedTopics = null;
                 if(msg.getSubscriber().hasEmail()){
@@ -147,7 +147,7 @@ public class ClientDataHandler extends SimpleChannelInboundHandler<Messages> {
                 ctx.channel().writeAndFlush(reply.build());  
             }
             else if(msg.getMessageType() == Messages.MessageType.ADD_SUBSCRIBER){
-                
+                System.out.println("ADD_SUBSCRIBER request from subscriber");
                 Topics topics = new Topics();
                 
                 if(msg.getSubscriber().hasEmail()){
@@ -158,7 +158,7 @@ public class ClientDataHandler extends SimpleChannelInboundHandler<Messages> {
                 }
             }
             else if(msg.getMessageType() == Messages.MessageType.REMOVE_SUBSCRIBER){
-                
+                System.out.println("UNSUBSCRIBE request from Subscriber");
                 Topics topics = new Topics();
                 
                 if(msg.getSubscriber().hasEmail()){
@@ -169,6 +169,7 @@ public class ClientDataHandler extends SimpleChannelInboundHandler<Messages> {
                 }
             }
             else if(msg.getMessageType() == Messages.MessageType.NEW_POST){
+                System.out.println("NEW_POST request from Publisher");
                 String title = msg.getTitle();
                 String post = msg.getMessage();
                 
@@ -201,9 +202,6 @@ public class ClientDataHandler extends SimpleChannelInboundHandler<Messages> {
     }
 
     private void sendEmail(ArrayList<String> to,String title, String post) {
-        
-        
-
       // Sender's email ID needs to be mentioned
       String from = DBConstants.USER;
       final String username = DBConstants.USER;
@@ -243,7 +241,7 @@ public class ClientDataHandler extends SimpleChannelInboundHandler<Messages> {
                addressTo);
 	
 	   // Set Subject: header field
-	   message.setSubject("New post in topic "+title);
+	   message.setSubject("New post\n Topic "+title);
 	
 	   // Now set the actual message
 	   message.setText(post);
@@ -251,7 +249,7 @@ public class ClientDataHandler extends SimpleChannelInboundHandler<Messages> {
 	   // Send message
 	   Transport.send(message);
 
-	   System.out.println("Sent message successfully....");
+	   System.out.println("Email sent to registered hosts.");
         
             
       } catch (MessagingException e) {
@@ -278,6 +276,7 @@ public class ClientDataHandler extends SimpleChannelInboundHandler<Messages> {
             }
             
         }
+        System.out.println("Messages sent to registered hosts.");
     }
 
 }

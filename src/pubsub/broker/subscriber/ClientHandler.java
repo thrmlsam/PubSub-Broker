@@ -35,8 +35,6 @@ class ClientHandler extends SimpleChannelInboundHandler<NetworkMessage.Messages>
     
     @Override
     protected void channelRead0(ChannelHandlerContext chc, NetworkMessage.Messages msg) throws Exception {
-        //Handle the broker-to-subscriber response
-       
         
     }
     
