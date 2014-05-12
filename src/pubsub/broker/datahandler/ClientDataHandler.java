@@ -126,15 +126,15 @@ public class ClientDataHandler extends SimpleChannelInboundHandler<Messages> {
                 ctx.channel().writeAndFlush(reply.build());  
             }
             else if(msg.getMessageType() == Messages.MessageType.GET_SUBSCRIBEDTOPICS){
-                System.out.println("Broker:  GET_SUBSCRIBEDTOPICS");
+               
                 Topics topics = new Topics();
                 ArrayList<String> subscribedTopics = null;
                 if(msg.getSubscriber().hasEmail()){
-                    System.out.println("sub has email");
+                    
                     subscribedTopics = topics.getSubscribedTopicsEmail(msg.getSubscriber().getEmail());
                 }
                 else if(msg.getSubscriber().hasHostAddress()){
-                    System.out.println("sub has hostaddr");
+                    
                     subscribedTopics = topics.getSubscribedTopicsIP(msg.getSubscriber().getHostAddress());
                 }
                 //ctx.channel().remoteAddress().toString()
@@ -147,30 +147,24 @@ public class ClientDataHandler extends SimpleChannelInboundHandler<Messages> {
                 ctx.channel().writeAndFlush(reply.build());  
             }
             else if(msg.getMessageType() == Messages.MessageType.ADD_SUBSCRIBER){
-                System.out.println("Broker:  ADD_SUBSCRIBER");
+                
                 Topics topics = new Topics();
                 
                 if(msg.getSubscriber().hasEmail()){
-                    System.out.println("sub has email");
-                    System.out.println(msg.getTopics(0) + "-" + msg.getSubscriber().getEmail());
                     topics.addSubscriberByEmail(msg.getTopics(0), msg.getSubscriber().getEmail());
                 }
                 else if(msg.getSubscriber().hasHostAddress()){
-                    System.out.println("sub has hostaddr");
                     topics.addSubscriberByHostAddress(msg.getTopics(0), msg.getSubscriber().getHostAddress());
                 }
             }
             else if(msg.getMessageType() == Messages.MessageType.REMOVE_SUBSCRIBER){
-                System.out.println("Broker:  REMOVE_SUBSCRIBER");
+                
                 Topics topics = new Topics();
                 
                 if(msg.getSubscriber().hasEmail()){
-                    System.out.println("sub has email");
-                    System.out.println(msg.getTopics(0) + "-" + msg.getSubscriber().getEmail());
                     topics.removeSubscriberEmail(msg.getTopics(0), msg.getSubscriber().getEmail());
                 }
                 else if(msg.getSubscriber().hasHostAddress()){
-                    System.out.println("sub has hostaddr");
                     topics.removeSubscriberHostAddress(msg.getTopics(0), msg.getSubscriber().getHostAddress());
                 }
             }
@@ -278,7 +272,6 @@ public class ClientDataHandler extends SimpleChannelInboundHandler<Messages> {
                 Client sub = new Client(hostList.get(i), DBConstants.SUB_PORT);
                 sub.connect();
                 sub.send(msg.build());
-                System.out.println("msg to host send");
                 sub.disconnect();
             } catch (Exception ex) {
                 Logger.getLogger(ClientDataHandler.class.getName()).log(Level.SEVERE, null, ex);

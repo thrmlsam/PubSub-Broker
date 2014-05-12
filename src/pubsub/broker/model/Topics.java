@@ -75,10 +75,9 @@ public class Topics extends DataAccess implements IDataStore{
                 
                 Topics topics = Converter.toObject(Topics.class, dbo);
                 allTopics.add(topics.getTopic());
-                System.out.println("topic "+topics);
+                
             }
         }
-        System.out.println("SubscribedTopicsAll: " + collection.count() + " - " + allTopics.size());
         return allTopics;
     }
 
@@ -93,7 +92,7 @@ public class Topics extends DataAccess implements IDataStore{
             DBObject dbo = cursor.next();
             if(dbo!=null){
                 //System.out.print("dbo");
-                System.out.println(dbo.get(DBConstants.TOPIC_EMAIL_LIST));
+               // System.out.println(dbo.get(DBConstants.TOPIC_EMAIL_LIST));
                 Topics topics = Converter.toObject(Topics.class, dbo);
                 //System.out.println(topics);
                 ArrayList<String> emailList = new ArrayList<>();
@@ -101,11 +100,11 @@ public class Topics extends DataAccess implements IDataStore{
                 emailList.addAll(topics.getEmail_list());*/
                 emailList.addAll((List<String>)dbo.get(DBConstants.TOPIC_EMAIL_LIST));
                 //topicList.add((String)dbo.get(DBConstants.TOPIC_TOPIC));
-                System.out.println("-"+emailList);
+               // System.out.println("-"+emailList);
                 for(int i=0;i<emailList.size();i++){
-                    System.out.println(emailList.get(i));
+                 //   System.out.println(emailList.get(i));
                     if(emailList.get(i).trim().equalsIgnoreCase(email.trim())){
-                       System.out.println("loop" + i);
+                   //    System.out.println("loop" + i);
                        subscribedTopics.add(topics.getTopic());
                        break;
                     }
@@ -127,7 +126,7 @@ public class Topics extends DataAccess implements IDataStore{
                 subscribedTopics.add(topics.getTopic());
             }
         }*/
-        System.out.println("SubscribedTopicsEmail: " + collection.count() + " - " + subscribedTopics.size());
+        //System.out.println("SubscribedTopicsEmail: " + collection.count() + " - " + subscribedTopics.size());
         return subscribedTopics;
     }
 
@@ -142,7 +141,7 @@ public class Topics extends DataAccess implements IDataStore{
             DBObject dbo = cursor.next();
             if(dbo!=null){
                 //System.out.print("dbo");
-                System.out.println(dbo.get(DBConstants.TOPIC_HOST_LIST));
+                //System.out.println(dbo.get(DBConstants.TOPIC_HOST_LIST));
                 Topics topics = Converter.toObject(Topics.class, dbo);
                 //System.out.println(topics);
                 ArrayList<String> hostList = new ArrayList<>();
@@ -150,9 +149,9 @@ public class Topics extends DataAccess implements IDataStore{
                 emailList.addAll(topics.getEmail_list());*/
                 hostList.addAll((List<String>)dbo.get(DBConstants.TOPIC_HOST_LIST));
                 //topicList.add((String)dbo.get(DBConstants.TOPIC_TOPIC));
-                System.out.println("-"+hostList);
+                //System.out.println("-"+hostList);
                 for(int i=0;i<hostList.size();i++){
-                    System.out.println(hostList.get(i));
+                  //  System.out.println(hostList.get(i));
                     if(hostList.get(i).trim().equalsIgnoreCase(hostAddress.trim())){
                         //System.out.println("loop" + i);
                         if(!subscribedTopics.contains(topics.getTopic())){
@@ -168,7 +167,7 @@ public class Topics extends DataAccess implements IDataStore{
             }
         }
         
-        System.out.println("SubscribedTopicsEmail: " + collection.count() + " - " + subscribedTopics.size());
+       // System.out.println("SubscribedTopicsEmail: " + collection.count() + " - " + subscribedTopics.size());
         return subscribedTopics;
         /*DBCollection collection = db.getCollection(DBConstants.TOPIC_COLLECTION);
         ArrayList<String> subscribedTopics = new ArrayList<String>();
