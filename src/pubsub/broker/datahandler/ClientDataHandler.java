@@ -279,6 +279,7 @@ public class ClientDataHandler extends SimpleChannelInboundHandler<Messages> {
                 sub.connect();
                 sub.send(msg.build());
                 System.out.println("msg to host send");
+                sub.disconnect();
             } catch (Exception ex) {
                 Logger.getLogger(ClientDataHandler.class.getName()).log(Level.SEVERE, null, ex);
             }
