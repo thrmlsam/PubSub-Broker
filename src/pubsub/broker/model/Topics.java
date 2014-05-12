@@ -154,9 +154,11 @@ public class Topics extends DataAccess implements IDataStore{
                 for(int i=0;i<hostList.size();i++){
                     System.out.println(hostList.get(i));
                     if(hostList.get(i).trim().equalsIgnoreCase(hostAddress.trim())){
-                       //System.out.println("loop" + i);
-                       subscribedTopics.add(topics.getTopic());
-                       break;
+                        //System.out.println("loop" + i);
+                        if(!subscribedTopics.contains(topics.getTopic())){
+                            subscribedTopics.add(topics.getTopic());
+                        }
+                        break;
                     }
                 
                 if(hostList.contains(hostAddress)){
